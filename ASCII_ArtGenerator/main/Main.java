@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 /**
  * Main - TODO Describe purpose of this user-defined type
  * 
- * @author Aidan Conley (2020)
+ * @author Aidan and Matthew (2020)
  *
  */
 public class Main {
@@ -105,6 +105,8 @@ public class Main {
      * @return a 2D array of the image's luminance values
      */
     private static String getASCIIImage(BufferedImage img) {
+	final String ASCIIGrayScale = "@%#*+=-:. ";
+	
 	// Create local variables
 	int width = img.getWidth();
 	int height = img.getHeight();
@@ -138,11 +140,9 @@ public class Main {
 	    }
 	}
 	
-	final String ASCIIGrayScale = "@%#*+=-:. ";
-	
+	// generates the ascii image based on the gray scale
 	String ASCIIImage = new String();
 	float rangeOfLum = maxLum - minLum;
-	
 	for (int row = 0; row < height; row++) {
 	    for (int col = 0; col < width; col++) {
 		float curLum = lumArray[row][col] - minLum;
