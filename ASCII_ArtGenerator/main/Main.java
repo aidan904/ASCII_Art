@@ -35,9 +35,7 @@ public class Main {
 		e.printStackTrace();
 	    }
 
-	    float[][] lumArray = getLumArray(img);
-
-	    String ASCIIImage = getASCIIImage(lumArray);
+	    String ASCIIImage = getASCIIImage(img);
 
 	    try {
 		FileWriter myWriter = new FileWriter("filename.txt");
@@ -106,17 +104,21 @@ public class Main {
      * @param img
      * @return a 2D array of the image's luminance values
      */
-    private static float[][] getLumArray(BufferedImage img) {
+    private static String getASCIIImage(BufferedImage img) {
 	// Create local variables
 	int width = img.getWidth();
 	int height = img.getHeight();
-
+	
 	// Create the 2D array
 	float[][] lumArray = new float[height][width];
+	
+	// Keep track of the maximum and minimum luminance values
+	float maxLum = -1;
+	float minLum = 256;
 
 	// Iterate through every pixel in the image and calculate its luminance value
-	for (int col = 0; col < width; col++) {
-	    for (int row = 0; row < height; row++) {
+	for (int row = 0; row < height; row++) {
+	    for (int col = 0; col < width; col++) {
 		// Get this pixel's RGB value
 		Color color = new Color(img.getRGB(col, row));
 
@@ -126,27 +128,26 @@ public class Main {
 		int blue = color.getBlue();
 
 		// Calculate luminance and add it to the array
-		lumArray[row][col] = (float) ((red * 0.299 + green * 0.587 + blue * 0.114) / 255);
+		float curLum = (float) ((red * 0.299 + green * 0.587 + blue * 0.114) / 255);
+		
+		// Update maximum and minimum values
+		if(curLum > maxLum) maxLum = curLum;
+		if(curLum < minLum) minLum = curLum;
+		
+		lumArray[row][col] = curLum;
 	    }
 	}
-
-	return lumArray;
-    }
-
-    /**
-     * @param lumArray - the array of luminance for the colors
-     * @return a string composing the ASCII image
-     */
-    private static String getASCIIImage(float[][] lumArray) {
+	
 	final String ASCIIGrayScale = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
-
+	
 	String ASCIIImage = new String();
-	int width = lumArray.length;
-	int height = lumArray[0].length;
-
-	for (int col = 0; col < width; col++) {
-	    for (int row = 0; row < height; row++) {
-		ASCIIImage += ASCIIGrayScale.charAt((int) (lumArray[col][row] * 69));
+	float rangeOfLum = maxLum - minLum;
+	
+	for (int row = 0; row < height; row++) {
+	    for (int col = 0; col < width; col++) {
+		float curLum = lumArray[row][col] - minLum;
+		curLum = curLum / rangeOfLum;
+		ASCIIImage += ASCIIGrayScale.charAt((int)(curLum * 69));
 	    }
 	    ASCIIImage += '\n';
 	}
