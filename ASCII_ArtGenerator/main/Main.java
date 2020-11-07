@@ -138,7 +138,7 @@ public class Main {
 	    }
 	}
 	
-	final String ASCIIGrayScale = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+	final String ASCIIGrayScale = "@%#*+=-:. ";
 	
 	String ASCIIImage = new String();
 	float rangeOfLum = maxLum - minLum;
@@ -147,7 +147,7 @@ public class Main {
 	    for (int col = 0; col < width; col++) {
 		float curLum = lumArray[row][col] - minLum;
 		curLum = curLum / rangeOfLum;
-		ASCIIImage += ASCIIGrayScale.charAt((int)(curLum * 69));
+		ASCIIImage += ASCIIGrayScale.charAt((int)(curLum * (ASCIIGrayScale.length() - 1)));
 	    }
 	    ASCIIImage += '\n';
 	}
