@@ -18,18 +18,27 @@ public class Main {
 	Scanner scanner = new Scanner(System.in);
 
 	// load image image file that will be converted to ASCII
-	BufferedImage img = loadImage(scanner);
-
-	// set proper dimensions of image
-	img = setDimensions(img, scanner);
-	
-	// save image
+	BufferedImage img;
 	try {
-	    // retrieve image
-	    BufferedImage bi = img;
-	    File outputfile = new File("saved.png");
-	    ImageIO.write(bi, "png", outputfile);
+	    img = loadImage(scanner);
+
+	    // set proper dimensions of image
+	    try {
+		img = setDimensions(img, scanner);
+	    } catch (InputMismatchException e) {
+		e.printStackTrace();
+	    }
+
+	    // save image
+	    try {
+		// retrieve image
+		BufferedImage bi = img;
+		File outputfile = new File("saved.png");
+		ImageIO.write(bi, "png", outputfile);
+	    } catch (IOException e) {
+	    }
 	} catch (IOException e) {
+	    e.printStackTrace();
 	}
 
 	scanner.close();
@@ -39,18 +48,13 @@ public class Main {
      * @param scanner - user input
      * @return the image that has been opened
      */
-    private static BufferedImage loadImage(Scanner scanner) {
+    private static BufferedImage loadImage(Scanner scanner) throws IOException {
 	System.out.println("Please input a file name.");
 	String fileName = scanner.nextLine();
 	BufferedImage img = null;
-	try {
-	    img = ImageIO.read(new File(fileName));
-	    System.out.println("Image loaded");
-	    return img;
-	} catch (IOException e) {
-	    System.out.println("Lol fuck you didnt work");
-	    return null;
-	}
+	img = ImageIO.read(new File(fileName));
+	System.out.println("Image loaded");
+	return img;
     }
 
     /**
@@ -58,7 +62,7 @@ public class Main {
      * @param scanner - user input
      * @return the image with new dimensions
      */
-    private static BufferedImage setDimensions(BufferedImage img, Scanner scanner) {
+    private static BufferedImage setDimensions(BufferedImage img, Scanner scanner) throws InputMismatchException {
 	// Get width and dimension of original image
 	int oldWidth = img.getWidth();
 	int oldHeight = img.getHeight();
@@ -66,22 +70,19 @@ public class Main {
 
 	// Get the desired width of the ASCII image
 	do {
+	    newWidth = scanner.nextInt();
 	    System.out.println("Please input the desired width of the ASCII image.");
-	    try {
-		newWidth = scanner.nextInt();
-		if (newWidth > oldWidth && newWidth > 0) {
-		    System.out.println("Invalid width");
-		}
-	    } catch (InputMismatchException e) {
-		System.out.println("Lol fuck you didnt work");
+	    newWidth = scanner.nextInt();
+	    if (newWidth > oldWidth && newWidth > 0) {
+		System.out.println("Invalid width");
 	    }
 	} while (newWidth > oldWidth && newWidth > 0);
 
 	// Calculate the new height from the given width
-	double scaleFactor = (double)newWidth / oldWidth;
+	double scaleFactor = (double) newWidth / oldWidth;
 	int newHeight = (int) (oldHeight * scaleFactor);
 	System.out.println(newHeight + " " + newWidth);
-	
+
 	// create new resized image
 	Image tmp = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
 	BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
