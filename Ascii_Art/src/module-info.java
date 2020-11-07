@@ -1,2 +1,0 @@
-module Ascii_Art {
-}
