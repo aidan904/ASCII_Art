@@ -62,6 +62,9 @@ public class Main {
 	String fileName = scanner.nextLine();
 	BufferedImage img = null;
 	img = ImageIO.read(new File(fileName));
+	if (img == null) {
+	    throw new IOException();
+	}
 	System.out.println("Image loaded");
 	return img;
     }
