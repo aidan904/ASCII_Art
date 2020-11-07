@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,15 @@ public class Main {
 
 	// set proper dimensions of image
 	img = setDimensions(img, scanner);
+	
+	// save image
+	try {
+	    // retrieve image
+	    BufferedImage bi = img;
+	    File outputfile = new File("saved.png");
+	    ImageIO.write(bi, "png", outputfile);
+	} catch (IOException e) {
+	}
 
 	scanner.close();
     }
@@ -67,10 +78,18 @@ public class Main {
 	} while (newWidth > oldWidth && newWidth > 0);
 
 	// Calculate the new height from the given width
-	double scaleFactor = newWidth / oldWidth;
+	double scaleFactor = (double)newWidth / oldWidth;
 	int newHeight = (int) (oldHeight * scaleFactor);
+	System.out.println(newHeight + " " + newWidth);
+	
+	// create new resized image
+	Image tmp = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+	BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+	Graphics2D g2d = newImage.createGraphics();
+	g2d.drawImage(tmp, 0, 0, newWidth, newHeight, null);
+	g2d.dispose();
 
-	return img;
+	return newImage;
     }
 
 }
