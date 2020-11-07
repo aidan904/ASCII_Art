@@ -21,6 +21,8 @@ public class Main {
 	} catch (IOException e) {
 	    System.out.println("Lol fuck you didnt work");
 	}
+	
+	scanner.close();
     }
 
 }
