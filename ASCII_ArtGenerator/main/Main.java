@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -13,12 +14,11 @@ import javax.imageio.ImageIO;
 
 /**
  * Main - TODO Describe purpose of this user-defined type
+ * 
  * @author Aidan Conley (2020)
  *
  */
 public class Main {
-
-    private static final String ASCIIGrayScale = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
 
     public static void main(String[] args) {
 	Scanner scanner = new Scanner(System.in);
@@ -36,7 +36,18 @@ public class Main {
 	    }
 
 	    float[][] lumArray = getLumArray(img);
-	    
+
+	    String ASCIIImage = getASCIIImage(lumArray);
+
+	    try {
+		FileWriter myWriter = new FileWriter("filename.txt");
+		myWriter.write(ASCIIImage);
+		myWriter.close();
+		System.out.println("File created");
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
@@ -78,7 +89,7 @@ public class Main {
 	} while (newWidth > oldWidth && newWidth > 0);
 
 	// Calculate the new height from the given width
-	double scaleFactor = (double) newWidth / oldWidth;
+	double scaleFactor = (double) newWidth / oldWidth / 2;
 	int newHeight = (int) (oldHeight * scaleFactor);
 
 	// create new resized image
@@ -90,8 +101,7 @@ public class Main {
 
 	return newImage;
     }
-    
-    
+
     /**
      * @param img
      * @return a 2D array of the image's luminance values
@@ -100,33 +110,47 @@ public class Main {
 	// Create local variables
 	int width = img.getWidth();
 	int height = img.getHeight();
-	
+
 	// Create the 2D array
 	float[][] lumArray = new float[height][width];
-	
+
 	// Iterate through every pixel in the image and calculate its luminance value
-	for (int row = 0; row < height; row++) {
-	    for (int col = 0; col < width; col++) {
+	for (int col = 0; col < width; col++) {
+	    for (int row = 0; row < height; row++) {
 		// Get this pixel's RGB value
-		Color color = new Color(img.getRGB(row, col));
-		
+		Color color = new Color(img.getRGB(col, row));
+
 		// Get individual red, green, and blue values
 		int red = color.getRed();
 		int green = color.getGreen();
 		int blue = color.getBlue();
-				
+
 		// Calculate luminance and add it to the array
-		lumArray[row][col] = (float)((red * 0.299 + green * 0.587 + blue * 0.114) / 255);
+		lumArray[row][col] = (float) ((red * 0.299 + green * 0.587 + blue * 0.114) / 255);
 	    }
 	}
-	
-	for (int i = 0; i < height; i++) {
-	    for (int j = 0; j < width; j++) {
-		System.out.print(lumArray[i][j] + " ");
-	    }
-	    System.out.println();
-	}
-	
+
 	return lumArray;
+    }
+
+    /**
+     * @param lumArray - the array of luminance for the colors
+     * @return a string composing the ASCII image
+     */
+    private static String getASCIIImage(float[][] lumArray) {
+	final String ASCIIGrayScale = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
+
+	String ASCIIImage = new String();
+	int width = lumArray.length;
+	int height = lumArray[0].length;
+
+	for (int col = 0; col < width; col++) {
+	    for (int row = 0; row < height; row++) {
+		ASCIIImage += ASCIIGrayScale.charAt((int) (lumArray[col][row] * 69));
+	    }
+	    ASCIIImage += '\n';
+	}
+
+	return ASCIIImage;
     }
 }
